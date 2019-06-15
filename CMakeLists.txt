@@ -1,11 +1,17 @@
-cmake_minimum_required(VERSION 3.13)
+CMAKE_MINIMUM_REQUIRED( VERSION 3.13 )
 INCLUDE( ExternalProject )
-project(OiAKProjekt)
+PROJECT( OiAKProjekt )
 
-set(CMAKE_CXX_STANDARD 17)
+SET( CMAKE_CXX_STANDARD 17 )
 
-add_executable(OiAKProjekt main.cpp)
-target_link_libraries(OiAKProjekt ${PROJECT_SOURCE_DIR}/FloatingPoint/cmake-build-debug/libFloatingPoint.a)
+ADD_SUBDIRECTORY( src )
+INCLUDE_DIRECTORIES( src/include )
+
+ADD_EXECUTABLE( OIAK_PROJECT
+                main.cpp
+                )
+TARGET_LINK_LIBRARIES( OIAK_PROJECT FLOATING_POINT )
+
 
 ENABLE_TESTING()
 ADD_SUBDIRECTORY( test )

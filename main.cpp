@@ -1,6 +1,7 @@
 #include <iostream>
 #include <climits>
-#include "FloatingPoint/source/headers/library.h"
+
+#include "src/include/library.h"
 
 int main() {
     FloatingPoint floatingPoint({1}, {1});

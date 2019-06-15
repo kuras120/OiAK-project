@@ -5,8 +5,9 @@
 #include <algorithm>
 #include <climits>
 #include <cmath>
-#include "headers/library.h"
-#include "headers/Utils.h"
+
+#include "library.h"
+#include "Utils.h"
 
 FloatingPoint::FloatingPoint(const std::vector<int32_t>& exponent, const std::vector<int32_t>& mantissa) {
     exponent_ = std::vector<uint32_t>(exponent.begin(), exponent.end());

@@ -9,8 +9,9 @@
 #include <iostream>
 #include <climits>
 #include <bitset>
-#include "headers/Utils.h"
-#include "math.h"
+#include <math.h>
+
+#include "Utils.h"
 
 void Utils::mulBig(std::vector<uint32_t> &bigNum, uint16_t multiplicand) {
     uint32_t carry = 0;
