@@ -26,8 +26,8 @@ TEST(AdderTest, NegativeFP) {
 }
 
 TEST(AdderHugeNumberTest, PositiveFP) {
-    FloatingPoint fp1 = FloatingPoint({1, 65}, {-1, 1});
-    FloatingPoint fp2 = FloatingPoint({1, 1}, {1, -1});
+    FloatingPoint fp1 = FloatingPoint({1, 65}, {1, -1});
+    FloatingPoint fp2 = FloatingPoint({1, 1}, {-1, 1});
     FloatingPoint result = fp1 + fp2;
 
     ASSERT_EQ(result.getSign(), 0);
@@ -36,11 +36,11 @@ TEST(AdderHugeNumberTest, PositiveFP) {
 }
 
 TEST(AdderHugeNumberTest, NegativeFP) {
-    FloatingPoint fp1 = FloatingPoint({1, 65}, {1, -1});
-    FloatingPoint fp2 = FloatingPoint({1, 1}, {-1, 1});
+    FloatingPoint fp1 = FloatingPoint({1, 65}, {-1, 1});
+    FloatingPoint fp2 = FloatingPoint({1, 1}, {1, -1});
     FloatingPoint result = fp1 + fp2;
 
     ASSERT_EQ(result.getSign(), 1);
-    ASSERT_THAT(result.getMantissa(true), testing::ElementsAre(1, -2, -1, 1));
+    ASSERT_THAT(result.getMantissa(true), testing::ElementsAre(-1, 1, 1, -1));
     ASSERT_THAT(result.getExponent(true), testing::ElementsAre(1, 1));
 }

@@ -4,47 +4,14 @@
 #include "src/include/library.h"
 
 int main() {
-    FloatingPoint floatingPoint({1}, {1});
-    FloatingPoint floatingPoint1({1}, {1});
+    FloatingPoint fp1 = FloatingPoint({1, 1024}, {1, 1});
+    FloatingPoint fp2 = FloatingPoint({1, 1}, {2, 512});
 
-    std::cout << "FP + FP1" << std::endl;
-    std::cout << floatingPoint;
-    std::cout << floatingPoint1 << std::endl;
-
-    FloatingPoint fp = floatingPoint + floatingPoint1;
-
-    std::cout << fp;
-
-    FloatingPoint floatingPoint2({5}, {-1});
-    FloatingPoint floatingPoint3({3}, {-1});
-
-    std::cout << "FP2 + FP3" << std::endl;
-    std::cout << floatingPoint2;
-    std::cout << floatingPoint3 << std::endl;
-
-    FloatingPoint fp1 = floatingPoint2 + floatingPoint3;
-
+    std::cout << "fp1 + fp2" << "\n";
     std::cout << fp1;
-
-    FloatingPoint floatingPoint4({10}, {INT_MAX});
-    FloatingPoint floatingPoint5({12}, {INT_MAX});
-
-    std::cout << "FP4 + FP5" << std::endl;
-    std::cout << floatingPoint4;
-    std::cout << floatingPoint5 << std::endl;
-
-    FloatingPoint fp2 = floatingPoint4 + floatingPoint5;
-
     std::cout << fp2;
 
-    FloatingPoint fp6 = FloatingPoint({-1}, {-1});
-    FloatingPoint fp7 = FloatingPoint({1}, {1});
-
-    std::cout << "FP6 + FP7" << std::endl;
-    std::cout << fp6;
-    std::cout << fp7 << std::endl;
-
-    FloatingPoint result = fp6 + fp7;
+    FloatingPoint result = fp1 + fp2;
 
     std::cout << result;
 

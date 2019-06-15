@@ -404,23 +404,18 @@ std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPo
 std::vector<uint32_t> FloatingPoint::shiftRight(std::vector<uint32_t> &vec, const std::vector<uint32_t> &rest) {
     bool equal = false;
     bool internalCounterFlag = false;
-    uint32_t sizeMantissa = vec.size();
     std::vector<uint32_t> counter(rest.size(), 0);
     std::vector<uint32_t> internalCounter(rest.size(), 0);
 
     while (!equal) {
-        std::bitset<32> firstBit(vec[0]);
-        if (firstBit[0] == 1) {
+        if ((vec[0] & 1) == 1) {
             internalCounterFlag = true;
             vec.insert(vec.begin(), 0);
-            sizeMantissa = vec.size();
         }
+        uint16_t bit = (vec[vec.size() - 1] >> 31) & 1;
 
-        std::bitset<32> lastBit(vec[sizeMantissa - 1]);
-        uint16_t bit = lastBit[31];
-
-        for (int i = sizeMantissa - 1; i >= 0; i --) {
-            uint16_t nextBit = vec[i] & (1 << (0));
+        for (int i = vec.size() - 1; i >= 0; i --) {
+            uint16_t nextBit = vec[i] & 1;
             vec[i] = vec[i] >> 1;
             vec[i] |= (bit << 31);
             bit = nextBit;
@@ -430,22 +425,37 @@ std::vector<uint32_t> FloatingPoint::shiftRight(std::vector<uint32_t> &vec, cons
         if (internalCounterFlag) Utils::addBig(internalCounter, 1);
 
         equal = true;
-        for (int i = sizeMantissa - 1; i >= 0; i --) {
+        for (int i = rest.size() - 1; i >= 0; i --) {
             if (rest[i] != counter[i]) {
                 equal = false;
                 break;
             }
         }
+
+//        std::cout << "Counter shift right: \n";
+//        for (int i = counter.size() - 1; i >= 0; i --) {
+//            std::bitset<32> b1(counter[i]);
+//            std::cout << b1.to_string() << " ";
+//        }
+//        std::cout << "\n";
+//        std::cout << "Rest shift right: \n";
+//        for (int i = rest.size() - 1; i >= 0; i --) {
+//            std::bitset<32> b1(rest[i]);
+//            std::cout << b1.to_string() << " ";
+//        }
+//        std::cout << "\n";
     }
     return internalCounter;
 }
 
 void FloatingPoint::shiftLeft(std::vector<uint32_t> &vec, const std::vector<uint32_t> &rest) {
     bool equal = false;
-    uint32_t sizeMantissa = vec.size();
     std::vector<uint32_t> counter(rest.size(), 0);
 
     while (!equal) {
+        if (((vec.back() >> 31) & 1) ^ ((vec.back() >> 30) & 1))
+            vec.push_back(-((vec.back() >> 31) & 1));
+
         uint16_t bit = 0;
         for (int i = 0; i < vec.size(); i ++) {
             std::bitset<32> checkLastBit(vec[i]);
@@ -457,12 +467,25 @@ void FloatingPoint::shiftLeft(std::vector<uint32_t> &vec, const std::vector<uint
         Utils::addBig(counter, 1);
 
         equal = true;
-        for (int i = sizeMantissa - 1; i >= 0; i --) {
+        for (int i = rest.size() - 1; i >= 0; i --) {
             if (rest[i] != counter[i]) {
                 equal = false;
                 break;
             }
         }
+
+//        std::cout << "Counter shift left: \n";
+//        for (int i = counter.size() - 1; i >= 0; i --) {
+//            std::bitset<32> b1(counter[i]);
+//            std::cout << b1.to_string() << " ";
+//        }
+//        std::cout << "\n";
+//        std::cout << "Rest shift left: \n";
+//        for (int i = rest.size() - 1; i >= 0; i --) {
+//            std::bitset<32> b1(rest[i]);
+//            std::cout << b1.to_string() << " ";
+//        }
+//        std::cout << "\n";
     }
 }
 
