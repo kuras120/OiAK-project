@@ -1,8 +1,4 @@
 #include <utility>
-
-//
-// Created by wojci on 06.04.2019.
-//
 #include <string>
 #include <vector>
 #include <sstream>

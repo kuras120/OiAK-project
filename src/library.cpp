@@ -17,6 +17,24 @@ FloatingPoint::FloatingPoint(const std::vector<int32_t>& exponent, const std::ve
     std::reverse(mantissa_.begin(), mantissa_.end());
 }
 
+std::vector<uint32_t> FloatingPoint::getExponent(bool reversed) {
+    if (reversed) std::reverse(exponent_.begin(), exponent_.end());
+    return exponent_;
+}
+
+std::vector<uint32_t> FloatingPoint::getMantissa(bool reversed) {
+    if (reversed) std::reverse(mantissa_.begin(), mantissa_.end());
+    return mantissa_;
+}
+
+bool FloatingPoint::getSign() const {
+    return (mantissa_.back() >> 31 ) & 1;
+}
+
+bool FloatingPoint::getExponentSign() const {
+    return (exponent_.back() >> 31 ) & 1;
+}
+
 FloatingPoint operator+(const FloatingPoint &x, const FloatingPoint &y) {
     std::vector<FloatingPoint> newArgs = FloatingPoint::compatibility(x, y);
 
@@ -119,48 +137,48 @@ bool FloatingPoint::operator!=(const FloatingPoint &x) {
 }
 
 bool FloatingPoint::operator<(const FloatingPoint &x) {
-    if(GetSign() != x.GetSign()){
-        return GetSign();
+    if(getSign() != x.getSign()){
+        return getSign();
     }
 
     for(int i=0; i < exponent_.size(); i++){
         if(exponent_[i] < x.exponent_[i])
-            return !GetExponentSign();
+            return !getExponentSign();
 
         if(exponent_[i] > x.exponent_[i])
-            return GetExponentSign();
+            return getExponentSign();
     }
 
     for(int i=0; i < mantissa_.size(); i++) {
         if(mantissa_[i] < x.mantissa_[i])
-            return !GetSign();
+            return !getSign();
 
         if(mantissa_[i] > x.mantissa_[i])
-            return GetSign();
+            return getSign();
     }
 
     return false;
 }
 
 bool FloatingPoint::operator>(const FloatingPoint &x)  {
-    if(GetSign() != x.GetSign()){
-        return !GetSign();
+    if(getSign() != x.getSign()){
+        return !getSign();
     }
 
     for(int i=0; i < exponent_.size(); i++){
         if(exponent_[i] < x.exponent_[i])
-            return GetExponentSign();
+            return getExponentSign();
 
         if(exponent_[i] > x.exponent_[i])
-            return !GetExponentSign();
+            return !getExponentSign();
     }
 
     for(int i=0; i < mantissa_.size(); i++) {
         if(mantissa_[i] < x.mantissa_[i])
-            return GetSign();
+            return getSign();
 
         if(mantissa_[i] > x.mantissa_[i])
-            return !GetSign();
+            return !getSign();
     }
 
     return false;
@@ -203,14 +221,6 @@ std::ostream &operator<<(std::ostream &os, FloatingPoint const &floatingPoint) {
     return os << std::endl;
 }
 
-bool FloatingPoint::GetSign() const {
-    return (mantissa_.back() >> 31 ) & 1;
-}
-
-bool FloatingPoint::GetExponentSign() const {
-    return (exponent_.back() >> 31 ) & 1;
-}
-
 std::vector<FloatingPoint> FloatingPoint::compatibility(FloatingPoint x, FloatingPoint y, bool mantissaFlag) {
     int toPush = x.mantissa_.size() - y.mantissa_.size();
     toPush = abs(toPush);
@@ -232,14 +242,14 @@ std::vector<FloatingPoint> FloatingPoint::compatibility(FloatingPoint x, Floatin
         if(x.mantissa_.size() > y.mantissa_.size()) {
 
             for(int i = 0; i < toPush; i++) {
-                if (y.GetSign())
+                if (y.getSign())
                     y.mantissa_.push_back(UINT_MAX);
                 else y.mantissa_.push_back(0);
             }
         }
         else if(x.mantissa_.size() < y.mantissa_.size()){
             for(int i = 0; i < toPush; i++) {
-                if (x.GetSign())
+                if (x.getSign())
                     x.mantissa_.push_back(UINT_MAX);
                 else x.mantissa_.push_back(0);
             }
@@ -253,14 +263,14 @@ std::vector<FloatingPoint> FloatingPoint::compatibility(FloatingPoint x, Floatin
     if(x.exponent_.size() > y.exponent_.size()){
 
         for(int i = 0; i < toPush; i++) {
-            if (y.GetExponentSign())
+            if (y.getExponentSign())
                 y.exponent_.push_back(UINT_MAX);
             else y.exponent_.push_back(0);
         }
 
     } else if(x.exponent_.size() < y.exponent_.size()){
         for(int i = 0; i < toPush; i++) {
-            if (x.GetExponentSign())
+            if (x.getExponentSign())
                 x.exponent_.push_back(UINT_MAX);
             else x.exponent_.push_back(0);
         }
@@ -407,4 +417,6 @@ void FloatingPoint::shiftLeft(std::vector<uint32_t> &vec, const std::vector<uint
         }
     }
 }
+
+
 
