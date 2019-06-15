@@ -37,5 +37,16 @@ int main() {
 
     std::cout << fp2;
 
+    FloatingPoint fp6 = FloatingPoint({-1}, {-1});
+    FloatingPoint fp7 = FloatingPoint({1}, {1});
+
+    std::cout << "FP6 + FP7" << std::endl;
+    std::cout << fp6;
+    std::cout << fp7 << std::endl;
+
+    FloatingPoint result = fp6 + fp7;
+
+    std::cout << result;
+
     return 0;
 }

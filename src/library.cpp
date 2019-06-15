@@ -49,7 +49,6 @@ FloatingPoint operator+(const FloatingPoint &x, const FloatingPoint &y) {
 
     mantissa = Utils::addVectors(newArgs[0].mantissa_, newArgs[1].mantissa_);
 
-
     if (!rest.empty()) {
         bool flag = false;
         for (int i = 0; i < rest.size(); i ++) {
@@ -221,11 +220,11 @@ std::ostream &operator<<(std::ostream &os, FloatingPoint const &floatingPoint) {
     return os << std::endl;
 }
 
-std::vector<FloatingPoint> FloatingPoint::compatibility(FloatingPoint x, FloatingPoint y, bool mantissaFlag) {
+std::vector<FloatingPoint> FloatingPoint::compatibility(FloatingPoint x, FloatingPoint y, bool pushMantissaFront) {
     int toPush = x.mantissa_.size() - y.mantissa_.size();
     toPush = abs(toPush);
 
-    if (mantissaFlag) {
+    if (pushMantissaFront) {
         if(x.mantissa_.size() > y.mantissa_.size()) {
 
             for(int i = 0; i < toPush; i++) {
@@ -293,21 +292,27 @@ std::vector<uint32_t> FloatingPoint::negate(std::vector<uint32_t> toNegate) {
 std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPoint &y) {
     std::vector<uint32_t> rest(x.exponent_.size(), 0);
 
-    uint32_t size = rest.size();
-
     int first = -1;
 
-    for(int i=0; i < size; i++){
-        if(i == size - 1){
-            if ((int32_t)x.exponent_[i] < (int32_t)y.exponent_[i])
+    for(int i = rest.size() - 1; i >= 0; i--){
+        if(i == rest.size() - 1){
+            if ((int32_t)x.exponent_[i] < (int32_t)y.exponent_[i]) {
                 first = 0;
-            if ((int32_t)x.exponent_[i] > (int32_t)y.exponent_[i])
+                break;
+            }
+            else if ((int32_t)x.exponent_[i] > (int32_t)y.exponent_[i]) {
                 first = 1;
+                break;
+            }
         } else {
-            if (x.exponent_[i] < y.exponent_[i])
+            if (x.exponent_[i] < y.exponent_[i]) {
                 first = 0;
-            if (x.exponent_[i] > y.exponent_[i])
+                break;
+            }
+            else if (x.exponent_[i] > y.exponent_[i]) {
                 first = 1;
+                break;
+            }
         }
     }
 
@@ -327,28 +332,71 @@ std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPo
 
     uint32_t r = 0;
 
-    for (int i = 0; i < size - 1; i ++) {
+    for (int i = 0; i < rest.size(); i ++) {
         uint64_t sub = (uint64_t)firstOperand->exponent_[i] - (uint64_t)secondOperand->exponent_[i] - r;
         rest[i] = (uint32_t)(sub&0xffffffff);
         r = (uint32_t)(sub >> 32);
     }
 
-    rest[rest.size() - 1] =
-            firstOperand->exponent_[size - 1] -
-            secondOperand->exponent_[size - 1] - abs((int32_t)r);
+    int16_t sign1 = (firstOperand->exponent_.back() >> 31) & 1;
+    int16_t sign2 = (secondOperand->exponent_.back() >> 31) & 1;
+    int16_t restSign = (rest.back() >> 31) & 1;
+
+//    std::cout << (int16_t)r << " " << sign1 << " " << sign2 << "\n";
+
+    if ((int16_t)r + sign1 + sign2 != restSign) {
+        rest.push_back(r);
+        secondOperand->exponent_.push_back(-secondOperand->getExponentSign());
+        secondOperand->mantissa_.push_back(-secondOperand->getSign());
+    }
+
+//    for (int i = secondOperand->exponent_.size() - 1; i >= 0; i --) {
+//        std::bitset<32> b1(secondOperand->exponent_[i]);
+//        std::cout << b1.to_string() << " ";
+//    }
+//    std::cout << "\n";
+//
+//    for (int i = rest.size() - 1; i >= 0; i --) {
+//        std::bitset<32> b1(rest[i]);
+//        std::cout << b1.to_string() << " ";
+//    }
+//    std::cout << "\n";
 
     uint32_t carry = 0;
 
-    for (int i = 0; i < size - 1; i++) {
+    for (int i = 0; i < rest.size(); i++) {
         uint64_t add = (uint64_t) secondOperand->exponent_[i] + (uint64_t) rest[i] + carry;
+
+        sign1 = (rest.back() >> 31) & 1;
+        sign2 = (secondOperand->exponent_.back() >> 31) & 1;
+
         secondOperand->exponent_[i] = (uint32_t) (add & 0xffffffff);
         carry = (uint32_t) (add >> 32);
     }
 
-    secondOperand->exponent_[size - 1] =
-            secondOperand->exponent_[size - 1] +
-            rest[size - 1] + abs((int32_t)carry);
+    restSign = (secondOperand->exponent_.back() >> 31) & 1;
 
+//    std::cout << (int16_t)carry << " " << sign1 << " " << sign2 << "\n";
+
+    if ((int16_t)carry + sign1 - sign2 != restSign) {
+        rest.push_back(carry);
+        secondOperand->exponent_.push_back(-secondOperand->getExponentSign());
+        secondOperand->mantissa_.push_back(-secondOperand->getSign());
+    }
+
+//    for (int i = secondOperand->mantissa_.size() - 1; i >= 0; i --) {
+//        std::bitset<32> b1(secondOperand->mantissa_[i]);
+//        std::cout << b1.to_string() << " ";
+//    }
+//    std::cout << "\n";
+//
+//    for (int i = rest.size() - 1; i >= 0; i --) {
+//        std::bitset<32> b1(rest[i]);
+//        std::cout << b1.to_string() << " ";
+//    }
+//    std::cout << "\n";
+//
+//    getchar();
 
     return FloatingPoint::shiftRight(secondOperand->mantissa_, rest);
 }
