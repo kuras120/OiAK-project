@@ -57,7 +57,10 @@ public:
      */
     friend std::ostream& operator<<(std::ostream& os, FloatingPoint const & floatingPoint);
 
-    static std::vector<FloatingPoint> compatibility(FloatingPoint x, FloatingPoint y, bool mantissaFlag=false);
+    /**
+     * Tools
+     */
+    static std::vector<FloatingPoint> compatibility(FloatingPoint x, FloatingPoint y, bool pushMantissaFront=false);
     static std::vector<uint32_t> negate(std::vector<uint32_t> toNegate);
     static std::vector<uint32_t> alignExponents(FloatingPoint &x, FloatingPoint &y);
     static std::vector<uint32_t> shiftRight(std::vector<uint32_t> &vec, const std::vector<uint32_t> &rest);
