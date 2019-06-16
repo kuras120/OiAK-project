@@ -334,44 +334,17 @@ std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPo
         secondOperand = &x;
     }
 
-    int32_t r = 0;
+    rest = Utils::addVectors(firstOperand->exponent_, FloatingPoint::negate(secondOperand->exponent_));
 
-    for (int i = 0; i < rest.size(); i ++) {
-        uint64_t sub = (uint64_t)firstOperand->exponent_[i] - (uint64_t)secondOperand->exponent_[i] - r;
-        rest[i] = (uint32_t)(sub&0xffffffff);
-        r = abs((int32_t)(sub >> 32));
-    }
-
-    int16_t sign1 = (firstOperand->exponent_.back() >> 31) & 1;
-    int16_t sign2 = (secondOperand->exponent_.back() >> 31) & 1;
-    int16_t restSign = (rest.back() >> 31) & 1;
-
-//    std::cout << r << " + " << sign1 << " - " << sign2 << " == " << restSign << "\n";
-
-    if (sign1 - sign2 + (int16_t)r != restSign) {
-        rest.push_back(r);
+    if (rest.size() > secondOperand->exponent_.size()) {
         secondOperand->exponent_.push_back(-secondOperand->getExponentSign());
         secondOperand->mantissa_.push_back(-secondOperand->getSign());
     }
+    
+    secondOperand->exponent_ = Utils::addVectors(secondOperand->exponent_, rest);
 
-    uint32_t carry = 0;
-
-    for (int i = 0; i < rest.size(); i++) {
-        uint64_t add = (uint64_t) secondOperand->exponent_[i] + (uint64_t) rest[i] + carry;
-
-        sign1 = (rest.back() >> 31) & 1;
-        sign2 = (secondOperand->exponent_.back() >> 31) & 1;
-
-        secondOperand->exponent_[i] = (uint32_t) (add & 0xffffffff);
-        carry = (uint32_t) (add >> 32);
-    }
-
-    restSign = (secondOperand->exponent_.back() >> 31) & 1;
-
-//    std::cout << carry << " + " << sign1 << " - " << sign2 << " == " << restSign << "\n";
-
-    if (sign1 + sign2 - (int16_t)carry  != restSign) {
-        rest.push_back(carry);
+    if (secondOperand->exponent_.size() > rest.size()) {
+        rest.push_back(-((rest.back() >> 31) & 1));
         secondOperand->exponent_.push_back(-secondOperand->getExponentSign());
         secondOperand->mantissa_.push_back(-secondOperand->getSign());
     }
