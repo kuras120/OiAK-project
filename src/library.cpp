@@ -290,6 +290,8 @@ std::vector<uint32_t> FloatingPoint::negate(std::vector<uint32_t> toNegate) {
 }
 
 std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPoint &y) {
+    // SPRAWDZENIE WYKLADNIKOW
+
     std::vector<uint32_t> rest(x.exponent_.size(), 0);
 
     int first = -1;
@@ -318,6 +320,8 @@ std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPo
 
     if (first == -1) return {};
 
+    // DOSTOSOWANIE WYKLADNIKOW
+
     FloatingPoint *firstOperand;
     FloatingPoint *secondOperand;
 
@@ -330,21 +334,19 @@ std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPo
         secondOperand = &x;
     }
 
-    uint32_t r = 0;
+    int32_t r = 0;
 
     for (int i = 0; i < rest.size(); i ++) {
         uint64_t sub = (uint64_t)firstOperand->exponent_[i] - (uint64_t)secondOperand->exponent_[i] - r;
         rest[i] = (uint32_t)(sub&0xffffffff);
-        r = (uint32_t)(sub >> 32);
+        r = abs((int32_t)(sub >> 32));
     }
 
     int16_t sign1 = (firstOperand->exponent_.back() >> 31) & 1;
     int16_t sign2 = (secondOperand->exponent_.back() >> 31) & 1;
     int16_t restSign = (rest.back() >> 31) & 1;
 
-//    std::cout << (int16_t)r << " " << sign1 << " " << sign2 << "\n";
-
-    if ((int16_t)r + sign1 + sign2 != restSign) {
+    if ((int16_t)r + sign1 - sign2 != restSign) {
         rest.push_back(r);
         secondOperand->exponent_.push_back(-secondOperand->getExponentSign());
         secondOperand->mantissa_.push_back(-secondOperand->getSign());
