@@ -77,7 +77,7 @@ FloatingPoint operator+(const FloatingPoint &x, const FloatingPoint &y) {
 FloatingPoint operator-(const FloatingPoint &x, const FloatingPoint &y) {
     FloatingPoint newY = y;
     newY.mantissa_ = FloatingPoint::negate(newY.mantissa_);
-    return x+y;
+    return x + y;
 }
 
 FloatingPoint operator*(const FloatingPoint &x, const FloatingPoint &y) {
@@ -316,7 +316,7 @@ std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPo
         }
     }
 
-    if (first == -1) return {0};
+    if (first == -1) return {};
 
     FloatingPoint *firstOperand;
     FloatingPoint *secondOperand;
@@ -350,18 +350,6 @@ std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPo
         secondOperand->mantissa_.push_back(-secondOperand->getSign());
     }
 
-//    for (int i = secondOperand->exponent_.size() - 1; i >= 0; i --) {
-//        std::bitset<32> b1(secondOperand->exponent_[i]);
-//        std::cout << b1.to_string() << " ";
-//    }
-//    std::cout << "\n";
-//
-//    for (int i = rest.size() - 1; i >= 0; i --) {
-//        std::bitset<32> b1(rest[i]);
-//        std::cout << b1.to_string() << " ";
-//    }
-//    std::cout << "\n";
-
     uint32_t carry = 0;
 
     for (int i = 0; i < rest.size(); i++) {
@@ -376,27 +364,11 @@ std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPo
 
     restSign = (secondOperand->exponent_.back() >> 31) & 1;
 
-//    std::cout << (int16_t)carry << " " << sign1 << " " << sign2 << "\n";
-
     if ((int16_t)carry + sign1 - sign2 != restSign) {
         rest.push_back(carry);
         secondOperand->exponent_.push_back(-secondOperand->getExponentSign());
         secondOperand->mantissa_.push_back(-secondOperand->getSign());
     }
-
-//    for (int i = secondOperand->mantissa_.size() - 1; i >= 0; i --) {
-//        std::bitset<32> b1(secondOperand->mantissa_[i]);
-//        std::cout << b1.to_string() << " ";
-//    }
-//    std::cout << "\n";
-//
-//    for (int i = rest.size() - 1; i >= 0; i --) {
-//        std::bitset<32> b1(rest[i]);
-//        std::cout << b1.to_string() << " ";
-//    }
-//    std::cout << "\n";
-//
-//    getchar();
 
     return FloatingPoint::shiftRight(secondOperand->mantissa_, rest);
 }
@@ -431,19 +403,6 @@ std::vector<uint32_t> FloatingPoint::shiftRight(std::vector<uint32_t> &vec, cons
                 break;
             }
         }
-
-//        std::cout << "Counter shift right: \n";
-//        for (int i = counter.size() - 1; i >= 0; i --) {
-//            std::bitset<32> b1(counter[i]);
-//            std::cout << b1.to_string() << " ";
-//        }
-//        std::cout << "\n";
-//        std::cout << "Rest shift right: \n";
-//        for (int i = rest.size() - 1; i >= 0; i --) {
-//            std::bitset<32> b1(rest[i]);
-//            std::cout << b1.to_string() << " ";
-//        }
-//        std::cout << "\n";
     }
     return internalCounter;
 }
@@ -473,19 +432,6 @@ void FloatingPoint::shiftLeft(std::vector<uint32_t> &vec, const std::vector<uint
                 break;
             }
         }
-
-//        std::cout << "Counter shift left: \n";
-//        for (int i = counter.size() - 1; i >= 0; i --) {
-//            std::bitset<32> b1(counter[i]);
-//            std::cout << b1.to_string() << " ";
-//        }
-//        std::cout << "\n";
-//        std::cout << "Rest shift left: \n";
-//        for (int i = rest.size() - 1; i >= 0; i --) {
-//            std::bitset<32> b1(rest[i]);
-//            std::cout << b1.to_string() << " ";
-//        }
-//        std::cout << "\n";
     }
 }
 
