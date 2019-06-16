@@ -76,6 +76,10 @@ int main() {
     std::cout << "fp1 - fp2" << "\n";
     std::cout << result1;
 
+    FloatingPoint result2 = fp1 * fp2;
+    std::cout << "fp1 * fp2" << "\n";
+    std::cout << result2;
+
     return 0;
 }
 

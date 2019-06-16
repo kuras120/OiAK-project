@@ -90,7 +90,7 @@ FloatingPoint operator*(const FloatingPoint &x, const FloatingPoint &y) {
     mantissa = Utils::mulVectors(newArgs[0].mantissa_, newArgs[1].mantissa_);
 
     std::reverse(mantissa.begin(), mantissa.end());
-    std::reverse(exponent.begin(), exponent.begin());
+    std::reverse(exponent.begin(), exponent.end());
 
     return FloatingPoint(std::vector<int32_t>(exponent.begin(), exponent.end()), std::vector<int32_t>(mantissa.begin(), mantissa.end()));
 }
@@ -340,7 +340,7 @@ std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPo
         secondOperand->exponent_.push_back(-secondOperand->getExponentSign());
         secondOperand->mantissa_.push_back(-secondOperand->getSign());
     }
-    
+
     secondOperand->exponent_ = Utils::addVectors(secondOperand->exponent_, rest);
 
     if (secondOperand->exponent_.size() > rest.size()) {
