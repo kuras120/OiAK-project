@@ -77,7 +77,7 @@ FloatingPoint operator+(const FloatingPoint &x, const FloatingPoint &y) {
 FloatingPoint operator-(const FloatingPoint &x, const FloatingPoint &y) {
     FloatingPoint newY = y;
     newY.mantissa_ = FloatingPoint::negate(newY.mantissa_);
-    return x + y;
+    return x + newY;
 }
 
 FloatingPoint operator*(const FloatingPoint &x, const FloatingPoint &y) {
@@ -346,7 +346,9 @@ std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPo
     int16_t sign2 = (secondOperand->exponent_.back() >> 31) & 1;
     int16_t restSign = (rest.back() >> 31) & 1;
 
-    if ((int16_t)r + sign1 - sign2 != restSign) {
+//    std::cout << r << " + " << sign1 << " - " << sign2 << " == " << restSign << "\n";
+
+    if (sign1 - sign2 + (int16_t)r != restSign) {
         rest.push_back(r);
         secondOperand->exponent_.push_back(-secondOperand->getExponentSign());
         secondOperand->mantissa_.push_back(-secondOperand->getSign());
@@ -366,7 +368,9 @@ std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPo
 
     restSign = (secondOperand->exponent_.back() >> 31) & 1;
 
-    if ((int16_t)carry + sign1 - sign2 != restSign) {
+//    std::cout << carry << " + " << sign1 << " - " << sign2 << " == " << restSign << "\n";
+
+    if (sign1 + sign2 - (int16_t)carry  != restSign) {
         rest.push_back(carry);
         secondOperand->exponent_.push_back(-secondOperand->getExponentSign());
         secondOperand->mantissa_.push_back(-secondOperand->getSign());

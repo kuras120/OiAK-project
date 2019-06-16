@@ -54,13 +54,14 @@ std::vector<uint32_t> Utils::addVectors(const std::vector<uint32_t> &vectorOne, 
         carry = (uint32_t) (add >> 32);
     }
 
-    std::bitset<32> b1(vectorOne[vectorOne.size() - 1]);
-    uint16_t sign1 = b1[31];
-    std::bitset<32> b2(vectorTwo[vectorTwo.size() - 1]);
-    uint16_t sign2 = b2[31];
-    std::bitset<32> b3(vectorToReturn[vectorToReturn.size() - 1]);
-    uint16_t sign3 = b3[31];
-    if (sign1 == sign2 && sign1 != sign3) vectorToReturn.push_back(carry);
+    int16_t sign1 = (vectorOne.back() >> 31) & 1;
+    int16_t sign2 = (vectorTwo.back() >> 31) & 1;
+    int16_t signResult = (vectorToReturn.back() >> 31) & 1;
+
+//    std::cout << carry << " + " << sign1 << " + " << sign2 << " == " << signResult << "\n";
+
+    if (sign1 + sign2 - (int16_t)carry != signResult) vectorToReturn.push_back(carry);
+
     return vectorToReturn;
 }
 
