@@ -77,7 +77,7 @@ FloatingPoint operator+(const FloatingPoint &x, const FloatingPoint &y) {
 FloatingPoint operator-(const FloatingPoint &x, const FloatingPoint &y) {
     FloatingPoint newY = y;
     newY.mantissa_ = FloatingPoint::negate(newY.mantissa_);
-    return x + y;
+    return x + newY;
 }
 
 FloatingPoint operator*(const FloatingPoint &x, const FloatingPoint &y) {
@@ -90,7 +90,7 @@ FloatingPoint operator*(const FloatingPoint &x, const FloatingPoint &y) {
     mantissa = Utils::mulVectors(newArgs[0].mantissa_, newArgs[1].mantissa_);
 
     std::reverse(mantissa.begin(), mantissa.end());
-    std::reverse(exponent.begin(), exponent.begin());
+    std::reverse(exponent.begin(), exponent.end());
 
     return FloatingPoint(std::vector<int32_t>(exponent.begin(), exponent.end()), std::vector<int32_t>(mantissa.begin(), mantissa.end()));
 }
@@ -290,6 +290,8 @@ std::vector<uint32_t> FloatingPoint::negate(std::vector<uint32_t> toNegate) {
 }
 
 std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPoint &y) {
+    // SPRAWDZENIE WYKLADNIKOW
+
     std::vector<uint32_t> rest(x.exponent_.size(), 0);
 
     int first = -1;
@@ -318,6 +320,8 @@ std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPo
 
     if (first == -1) return {};
 
+    // DOSTOSOWANIE WYKLADNIKOW
+
     FloatingPoint *firstOperand;
     FloatingPoint *secondOperand;
 
@@ -330,42 +334,17 @@ std::vector<uint32_t> FloatingPoint::alignExponents(FloatingPoint &x, FloatingPo
         secondOperand = &x;
     }
 
-    uint32_t r = 0;
+    rest = Utils::addVectors(firstOperand->exponent_, FloatingPoint::negate(secondOperand->exponent_));
 
-    for (int i = 0; i < rest.size(); i ++) {
-        uint64_t sub = (uint64_t)firstOperand->exponent_[i] - (uint64_t)secondOperand->exponent_[i] - r;
-        rest[i] = (uint32_t)(sub&0xffffffff);
-        r = (uint32_t)(sub >> 32);
-    }
-
-    int16_t sign1 = (firstOperand->exponent_.back() >> 31) & 1;
-    int16_t sign2 = (secondOperand->exponent_.back() >> 31) & 1;
-    int16_t restSign = (rest.back() >> 31) & 1;
-
-//    std::cout << (int16_t)r << " " << sign1 << " " << sign2 << "\n";
-
-    if ((int16_t)r + sign1 + sign2 != restSign) {
-        rest.push_back(r);
+    if (rest.size() > secondOperand->exponent_.size()) {
         secondOperand->exponent_.push_back(-secondOperand->getExponentSign());
         secondOperand->mantissa_.push_back(-secondOperand->getSign());
     }
 
-    uint32_t carry = 0;
+    secondOperand->exponent_ = Utils::addVectors(secondOperand->exponent_, rest);
 
-    for (int i = 0; i < rest.size(); i++) {
-        uint64_t add = (uint64_t) secondOperand->exponent_[i] + (uint64_t) rest[i] + carry;
-
-        sign1 = (rest.back() >> 31) & 1;
-        sign2 = (secondOperand->exponent_.back() >> 31) & 1;
-
-        secondOperand->exponent_[i] = (uint32_t) (add & 0xffffffff);
-        carry = (uint32_t) (add >> 32);
-    }
-
-    restSign = (secondOperand->exponent_.back() >> 31) & 1;
-
-    if ((int16_t)carry + sign1 - sign2 != restSign) {
-        rest.push_back(carry);
+    if (secondOperand->exponent_.size() > rest.size()) {
+        rest.push_back(-((rest.back() >> 31) & 1));
         secondOperand->exponent_.push_back(-secondOperand->getExponentSign());
         secondOperand->mantissa_.push_back(-secondOperand->getSign());
     }

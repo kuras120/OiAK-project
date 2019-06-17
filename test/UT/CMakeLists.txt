@@ -1,5 +1,5 @@
 ADD_EXECUTABLE( ut
-                UnitTests.cpp FloatingPointConstructorTest.cpp FloatingPointAdderTest.cpp FloatingPointPerformanceTest.cpp)
+                UnitTests.cpp FloatingPointConstructorTest.cpp FloatingPointAdderTest.cpp FloatingPointPerformanceTest.cpp FloatingPointCompatibilityTest.cpp FloatingPointMultiplierTest.cpp)
 
 INCLUDE_DIRECTORIES( mocks )
 
