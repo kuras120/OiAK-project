@@ -41,11 +41,7 @@ void Utils::atoBigNum(std::string str, std::vector<uint32_t> &bigNum) {
 }
 
 std::vector<uint32_t> Utils::addVectors(const std::vector<uint32_t> &vectorOne, const std::vector<uint32_t> &vectorTwo) {
-    std::vector<uint32_t> vectorToReturn;
-
-    vectorToReturn.reserve(vectorOne.size());
-    for(int i=0; i<vectorOne.size(); i++)
-        vectorToReturn.push_back(0);
+    std::vector<uint32_t> vectorToReturn(vectorOne.size(), 0);
 
     uint32_t carry = 0;
     for(int i = 0; i < vectorOne.size(); i++){
@@ -58,38 +54,34 @@ std::vector<uint32_t> Utils::addVectors(const std::vector<uint32_t> &vectorOne, 
     int16_t sign2 = (vectorTwo.back() >> 31) & 1;
     int16_t signResult = (vectorToReturn.back() >> 31) & 1;
 
-//    std::cout << carry << " + " << sign1 << " + " << sign2 << " == " << signResult << "\n";
-
     if (sign1 + sign2 - (int16_t)carry != signResult) vectorToReturn.push_back(carry);
 
     return vectorToReturn;
 }
 
 std::vector<uint32_t> Utils::mulVectors(const std::vector<uint32_t> &vectorOne, const std::vector<uint32_t> &vectorTwo) {
-    std::vector<uint32_t> vectorToReturn;
-
-    vectorToReturn.reserve(vectorOne.size());
-    for(int i=0; i<vectorOne.size(); i++)
-        vectorToReturn.push_back(0);
+    std::vector<uint32_t> vectorToReturn(vectorOne.size(), 0);
 
     uint32_t carry = 0;
     for (unsigned i = 0; i < vectorOne.size(); i++) {
-        uint64_t r = ((uint64_t )vectorOne[i] * (uint64_t)vectorTwo[i]) + carry;
+        uint64_t r = ((int64_t)(int32_t)vectorOne[i] * (int64_t)(int32_t)vectorTwo[i]) + carry;
         vectorToReturn[i] = (uint32_t)(r&0xffffffff);
         carry = (uint32_t)(r >> 32);
     }
 
     if (carry) vectorToReturn.push_back(carry);
 
+    int16_t sign1 = (vectorOne.back() >> 31) & 1;
+    int16_t sign2 = (vectorTwo.back() >> 31) & 1;
+    int16_t signResult = (vectorToReturn.back() >> 31) & 1;
+
+    if ((sign1 ^ sign2) != signResult) vectorToReturn.push_back(-(sign1 ^ sign2));
+
     return vectorToReturn;
 }
 
 std::vector<uint32_t> Utils::divVectors(const std::vector<uint32_t> &vectorOne, const std::vector<uint32_t> &vectorTwo) {
-    std::vector<uint32_t> vectorToReturn;
-
-    vectorToReturn.reserve(vectorOne.size());
-    for(int i=0; i<vectorOne.size(); i++)
-        vectorToReturn.push_back(0);
+    std::vector<uint32_t> vectorToReturn(vectorOne.size(), 0);
 
     return vectorToReturn;
 }

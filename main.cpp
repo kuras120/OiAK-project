@@ -1,6 +1,7 @@
 #include <iostream>
 #include <climits>
 #include <chrono>
+#include <bitset>
 #include "src/include/library.h"
 
 void measureTimeAdder() {
@@ -62,8 +63,8 @@ void measureTimeAdder() {
 }
 
 int main() {
-    FloatingPoint fp1 = FloatingPoint({1, 2}, {1, 1});
-    FloatingPoint fp2 = FloatingPoint({1, 1}, {2, 512});
+    FloatingPoint fp1 = FloatingPoint({1, 2}, {INT32_MAX});
+    FloatingPoint fp2 = FloatingPoint({1, 1}, {INT32_MAX});
 
     std::cout << fp1;
     std::cout << fp2;
@@ -78,8 +79,7 @@ int main() {
 
     FloatingPoint result2 = fp1 * fp2;
     std::cout << "fp1 * fp2" << "\n";
-    std::cout << result2;
+    std::cout << result2 << "\n";
 
     return 0;
 }
-
