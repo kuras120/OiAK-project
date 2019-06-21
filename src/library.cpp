@@ -41,6 +41,7 @@ FloatingPoint operator+(const FloatingPoint &x, const FloatingPoint &y) {
     std::vector<uint32_t> exponent;
     std::vector<uint32_t> mantissa;
 
+    // Dodawanie
     std::vector<uint32_t> rest = FloatingPoint::alignExponents(newArgs[0], newArgs[1]);
 
     newArgs = FloatingPoint::compatibility(newArgs[0], newArgs[1], true);
@@ -49,6 +50,7 @@ FloatingPoint operator+(const FloatingPoint &x, const FloatingPoint &y) {
 
     mantissa = Utils::addVectors(newArgs[0].mantissa_, newArgs[1].mantissa_);
 
+    // Normalizacja
     if (!rest.empty()) {
         bool flag = false;
         for (int i = 0; i < rest.size(); i ++) {
@@ -86,8 +88,40 @@ FloatingPoint operator*(const FloatingPoint &x, const FloatingPoint &y) {
     std::vector<uint32_t> exponent(newArgs[0].exponent_.size(), 0);
     std::vector<uint32_t> mantissa(newArgs[0].mantissa_.size(), 0);
 
+    // Mnozenie
     exponent = Utils::addVectors(newArgs[0].exponent_, newArgs[1].exponent_);
     mantissa = Utils::mulVectors(newArgs[0].mantissa_, newArgs[1].mantissa_);
+
+    std::vector<uint32_t> counter(mantissa.size(), 0);
+
+    // Normalizacja
+    for (int i = 0; i < mantissa.size(); i ++) {
+        if (mantissa[i] == 0) {
+            Utils::addBig(counter, 32);
+        }
+        else {
+            std::bitset<32> checkPosition(mantissa[i]);
+            for (int j = 0; j < 32; j ++) {
+                if (checkPosition[j] == 1) break;
+                Utils::addBig(counter, 1);
+            }
+            break;
+        }
+    }
+
+    for (int i = counter.size() - 1; i >= 0; i --) {
+        if (counter[i] != 0) {
+            auto shift = FloatingPoint::shiftRight(mantissa, counter);
+            break;
+        }
+    }
+
+    exponent = Utils::addVectors(exponent, counter);
+
+    while (((mantissa.back() >> 31) & 1) == ((mantissa[mantissa.size() - 2] >> 31) & 1)) {
+        if (mantissa.back() == 0 || (int32_t)mantissa.back() == -1) mantissa.pop_back();
+        else break;
+    }
 
     std::reverse(mantissa.begin(), mantissa.end());
     std::reverse(exponent.begin(), exponent.end());

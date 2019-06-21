@@ -60,16 +60,27 @@ std::vector<uint32_t> Utils::addVectors(const std::vector<uint32_t> &vectorOne, 
 }
 
 std::vector<uint32_t> Utils::mulVectors(const std::vector<uint32_t> &vectorOne, const std::vector<uint32_t> &vectorTwo) {
-    std::vector<uint32_t> vectorToReturn(vectorOne.size(), 0);
+    std::vector<uint32_t> vectorToReturn(vectorOne.size() * 2, 0);
 
-    uint32_t carry = 0;
-    for (unsigned i = 0; i < vectorOne.size(); i++) {
-        uint64_t r = ((int64_t)(int32_t)vectorOne[i] * (int64_t)(int32_t)vectorTwo[i]) + carry;
-        vectorToReturn[i] = (uint32_t)(r&0xffffffff);
-        carry = (uint32_t)(r >> 32);
+    for (int i = 0; i < vectorOne.size(); i ++) {
+        for (int j = 0; j < vectorTwo.size(); j ++) {
+            uint64_t r;
+
+            if (i == vectorOne.size() - 1 && j == vectorTwo.size() - 1) {
+                r = (int64_t)(int32_t)vectorOne[j] * (int64_t)(int32_t)vectorTwo[i] + vectorToReturn[j + i];
+            }
+            else {
+                r = (uint64_t)vectorOne[j] * (uint64_t)vectorTwo[i] + vectorToReturn[j + i];
+            }
+            vectorToReturn[j + i] = (uint32_t)(r&0xffffffff);
+            vectorToReturn[j + i + 1] = (uint32_t)(r >> 32);
+        }
     }
 
-    if (carry) vectorToReturn.push_back(carry);
+    while (((vectorToReturn.back() >> 31) & 1) == ((vectorToReturn[vectorToReturn.size() - 2] >> 31) & 1)) {
+        if (vectorToReturn.back() == 0 || (int32_t)vectorToReturn.back() == -1) vectorToReturn.pop_back();
+        else break;
+    }
 
     int16_t sign1 = (vectorOne.back() >> 31) & 1;
     int16_t sign2 = (vectorTwo.back() >> 31) & 1;
