@@ -68,7 +68,11 @@ FloatingPoint operator+(const FloatingPoint &x, const FloatingPoint &y) {
         }
     }
 
-    while (mantissa[0] == 0) mantissa.erase(mantissa.begin());
+    while (((mantissa.back() >> 31) & 1) == ((mantissa[mantissa.size() - 2] >> 31) & 1)) {
+        if (mantissa.size() == 1) break;
+        if (mantissa.back() == 0 || (int32_t)mantissa.back() == -1) mantissa.pop_back();
+        else break;
+    }
 
     std::reverse(exponent.begin(), exponent.end());
     std::reverse(mantissa.begin(), mantissa.end());

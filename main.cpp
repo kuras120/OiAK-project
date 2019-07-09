@@ -193,8 +193,8 @@ void measureTimeMultiplier() {
 }
 
 int main() {
-    FloatingPoint fp1 = FloatingPoint({1, 2}, {-1, INT32_MAX});
-    FloatingPoint fp2 = FloatingPoint({1, 1}, {1, INT32_MAX});
+    FloatingPoint fp1 = FloatingPoint({1, 1}, {-1, -1});
+    FloatingPoint fp2 = FloatingPoint({1, 1}, {0, 1});
 
     std::cout << "Elementy: \n";
     std::cout << fp1;
